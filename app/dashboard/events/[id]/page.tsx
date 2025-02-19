@@ -1,12 +1,16 @@
-'use client'
+'use client';
+import React from 'react';
+import EventDetail from '../../../../components/EventDetail';
 
-export const EventDetail = () => {
-  return (
-    <div className="p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-xl font-bold mb-4">Events Details</h2>
-      <button className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-        Event Details
-      </button>
-    </div>
-  )
-}
+const EventDetailPage: React.FC = ({ params }: { params: { id: string } }) => {
+const { id } = params
+    if (!id) {
+        return <div>Loading...</div>;
+    }
+
+    return <EventDetail eventId={id as string} />;
+};
+
+export default EventDetailPage;
+
+

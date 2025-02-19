@@ -1,40 +1,60 @@
-// app/dashboard/events/page.tsx
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
+import EventDetail from '../../../components/EventDetail';
 
-async function getEvents() {
-  const { data: events, error } = await supabase
-    .from('events')
-    .select('*');
+const EventsPage: React.FC = () => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (error) {
-    console.error("Error fetching events:", error);
-    return []; // Or handle the error appropriately
-  }
+  useEffect(() => {
+    async function fetchEvents() {
+      console.log("Fetching events...");
+      const { data: events, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("start_time", { ascending: true });
 
-  return events || [];
-}
+      if (error) {
+        console.error("Error fetching events:", error);
+      } else {
+        console.log("Events fetched successfully:", events);
+        setEvents(events);
+      }
+      setLoading(false);
+    }
 
-export default async function EventsDashboard() {
-  const events = await getEvents();
+    fetchEvents();
+  }, []);
 
   return (
     <div>
-      <h1>Events Dashboard</h1>
+     
+      <div className="grid gap-5 p-5 bg-gray-800">
       <Link href="/dashboard/events/create">
-      <button
-        className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40"
-      >
-Create New Event 
-      </button>
+        <button
+          className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40"
+        >
+          Create New Event
+        </button>
       </Link>
-      <ul>
-        {events.map((event) => (
-          <li key={event.id}>
-            {event.title} - {event.location} - {new Date(event.start_time).toLocaleDateString()}
-          </li>
-        ))}
-      </ul>
+      </div>
+      <h1>Events Dashboard</h1>
+      {loading ? (
+        <p>Loading events...</p>
+      ) : events.length === 0 ? (
+        <p>No events found.</p>
+      ) : (
+        <ul>
+          {events.map(event => (
+            <EventDetail key={event.id} eventId={event.id} />
+          ))}
+        </ul>
+      )}
     </div>
   );
-}
+};
+
+export default EventsPage;
