@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import { format } from 'date-fns';
 
 interface EventDetailProps {
     eventId: string;
@@ -44,7 +43,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ eventId }) => {
 
 
     return (
-        <Link href={`/dashboard/events/${event.id}`} className="block">
             <div className="block p-6 max-w-sm mx-auto text-gray-800 bg-white rounded-xl shadow-md space-y-4 hover:bg-gray-100">
                 <h2 className="text-xl font-bold">{event.show_title}</h2>
                 <strong className="text-gray-500">{new Date(event.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(event.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
@@ -61,7 +59,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ eventId }) => {
                             <p className="text-gray-500">{event.description}</p>
 
             </div>
-        </Link>
     );
 };
 

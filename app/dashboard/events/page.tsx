@@ -49,7 +49,9 @@ const EventsPage: React.FC = () => {
       ) : (
         <ul>
           {events.map(event => (
-            <EventDetail key={event.id} eventId={event.id} />
+            <Link href={`/dashboard/events/${event.id}`} className="block">
+              <EventDetail key={event.id} eventId={event.id} />
+            </Link>
           ))}
         </ul>
       )}
