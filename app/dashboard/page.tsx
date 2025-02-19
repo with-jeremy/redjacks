@@ -15,9 +15,11 @@ const Dashboard = () => {
         User Management
       </button>
       </Link>
+      <Link href="/dashboard/events">
       <button className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40">
         Events Management
       </button>
+      </Link>
     </div>
   );
 };
