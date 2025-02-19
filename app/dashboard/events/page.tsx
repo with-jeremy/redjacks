@@ -6,7 +6,14 @@ import Link from 'next/link';
 import EventDetail from '../../../components/EventDetail';
 
 const EventsPage: React.FC = () => {
-  const [events, setEvents] = useState([]);
+  interface Event {
+    id: string;
+    name: string;
+    start_time: string;
+    // Add other event properties here
+  }
+
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

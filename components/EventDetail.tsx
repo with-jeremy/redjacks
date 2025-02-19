@@ -3,8 +3,23 @@ import { supabase } from '@/lib/supabaseClient';
 
 
 
+interface EventDetailProps {
+    eventId: string;
+}
+
+interface Event {
+    id: string;
+    show_title: string;
+    start_time: string;
+    door_time: string;
+    capacity: number;
+    price: number;
+    show_flyer_url?: string;
+    description: string;
+}
+
 const EventDetail: React.FC<EventDetailProps> = ({ eventId }) => {
-    const [event, setEvent] = useState(null);
+    const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

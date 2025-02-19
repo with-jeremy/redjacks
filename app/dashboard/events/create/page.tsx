@@ -8,17 +8,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from '@/lib/supabaseClient';
 
-interface EventFormProps {
-  showTitle: string;
-  description: string;
-  doorTime: string;
-  startTime: string;
-  capacity: number | null;
-  showFlyerUrl: string;
-  price: number | null;
-  userId: string;
-}
-
 export default function EventForm() {
   const [showTitle, setShowTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -54,7 +43,7 @@ export default function EventForm() {
         const fileName = `${uuidv4()}.${fileExt}`;
         const filePath = `public/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("showPosters")
           .upload(filePath, showFlyer, {
             cacheControl: "3600",
@@ -66,14 +55,11 @@ export default function EventForm() {
           throw new Error(`Could not upload image: ${uploadError.message}. Please check your storage bucket policies.`);
         }
 
-        const { data: publicUrlData, error: getUrlError } = supabase.storage
+        const { data: publicUrlData } = supabase.storage
           .from("showPosters")
           .getPublicUrl(filePath);
 
-        if (getUrlError) {
-          console.error("Error getting public URL:", getUrlError);
-          throw getUrlError;
-        }
+        
 
         showFlyerUrl = publicUrlData.publicUrl;
       }
@@ -102,9 +88,13 @@ export default function EventForm() {
 
       router.push("/dashboard/events");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error creating event:", err);
-      setError(`Error creating event: ${err.message}`);
+      if (err instanceof Error) {
+        setError(`Error creating event: ${err.message}`);
+      } else {
+        setError("Error creating event: An unknown error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
