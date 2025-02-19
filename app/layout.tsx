@@ -54,7 +54,7 @@ export default function RootLayout({
               </div>
             </div>
           </nav>
-          {children}
+          <main className="container mx-auto px-4 py-8">{children}</main>
           <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
           <div className="container mx-auto text-center px-4 py-8">
             Website by Jeremy@WithJeremy.com - Copyright 2025 <Link href="/dashboard">@</Link> Red Jacks Entertainment
