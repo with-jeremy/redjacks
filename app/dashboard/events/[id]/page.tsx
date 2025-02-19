@@ -2,20 +2,21 @@
 
 import React from 'react';
 import EventDetail from '../../../../components/EventDetail';
+import { useParams } from 'next/navigation'
 
 
 
 
 
 
-
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+export default function EventDetailPage() {
   
-   
+    const params = useParams<{ id: string }>()
 
 
 
-    const { id }: { id: { id: string } } = React.use(params);
+
+    const { id } = params;
     
    
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import EventDetail from '../../../components/EventDetail';
+import EventDetail from '@/components/EventDetail';
 
 const EventsPage: React.FC = () => {
   interface Event {
@@ -39,16 +39,8 @@ const EventsPage: React.FC = () => {
   return (
     <div>
      
-      <div className="grid gap-5 p-5 bg-gray-800">
-      <Link href="/dashboard/events/create">
-        <button
-          className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40"
-        >
-          Create New Event
-        </button>
-      </Link>
-      </div>
-      <h1>Events Dashboard</h1>
+      
+      <h1>Events List</h1>
       {loading ? (
         <p>Loading events...</p>
       ) : events.length === 0 ? (
