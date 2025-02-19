@@ -9,9 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+  			background: '#000000', // very dark green, almost black
+  			foreground: '#FFFFCF', // bright silvery
+        blood: 'red',
+        silver: 'hsl(var(--silver))'
+  		}
     },
   },
   plugins: [],
