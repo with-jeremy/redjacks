@@ -1,63 +1,21 @@
-"use client";
+import EventList from "@/app/components/EventList";
+import { Dancing_Script } from "next/font/google"
+import { supabase } from "@/lib/supabaseClient";
 
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import Link from 'next/link';
-import EventDetail from '@/components/EventDetail';
+const dancingScript = Dancing_Script({ subsets: ["latin"] })
 
-const EventsPage: React.FC = () => {
-  interface Event {
-    id: string;
-    name: string;
-    start_time: string;
-    // Add other event properties here
-  }
-
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchEvents() {
-      console.log("Fetching events...");
-      const { data: events, error } = await supabase
-        .from("rje_events")
-        .select("*")
-        .order("start_time", { ascending: true });
-
-      if (error) {
-        console.error("Error fetching events:", error);
-      } else {
-        console.log("Events fetched successfully:", events);
-        setEvents(events);
-      }
-      setLoading(false);
-    }
-
-    fetchEvents();
-  }, []);
+export default async function Home() {
+  const { data: events, error } = await supabase.from("rje_events").select("*").order("start_time", { ascending: true })
 
   return (
-    <div>
-     
-      
-      <h1>Events List</h1>
-      {loading ? (
-        <p>Loading events...</p>
-      ) : events.length === 0 ? (
-        <p>No events found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {events.map(event => (
-            <div className='flex p-5 mx-auto' key={event.id}>
-              <Link href={`/dashboard/events/${event.id}`} className="block justify-center align-center">
-                <EventDetail eventId={event.id} />
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+   
+   <h1 className={`text-6xl font-bold mb-8 text-blood ${dancingScript.className}`}>Welcome to Red Jacks</h1>
+      <p className="text-2xl mb-8 text-silver">Discover and book tickets for amazing events!</p>
+      <br />
+      <EventList events={events} />
+         </div>
   );
-};
+}
 
-export default EventsPage;
+ 

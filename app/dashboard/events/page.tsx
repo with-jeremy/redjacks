@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import EventDetail from '../../../components/EventDetail';
+import EventDetail from '../../events/[id]/TicketPurchase';
 
 const EventsPage: React.FC = () => {
   interface Event {
