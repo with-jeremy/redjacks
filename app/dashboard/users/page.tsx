@@ -44,7 +44,7 @@ export default async function UserDashboard(params: {
                   try {
                     const result = await setRole(formData);
                     alert(result.message); // Display message to the user
-                  } catch (error: any) {
+                  } catch (error: Error | any) {
                     alert(error.message || 'An error occurred.');
                   }
                 }} className="inline-block">
@@ -62,7 +62,7 @@ export default async function UserDashboard(params: {
                   try {
                     const result = await setRole(formData);
                     alert(result.message); // Display message to the user
-                  } catch (error: any) {
+                  } catch (error: Error | any) {
                     alert(error.message || 'An error occurred.');
                   }
                 }} className="inline-block">
@@ -80,7 +80,7 @@ export default async function UserDashboard(params: {
                   try {
                     const result = await setRole(formData);
                     alert(result.message); // Display message to the user
-                  } catch (error: any) {
+                  } catch (error: Error | any) {
                     alert(error.message || 'An error occurred.');
                   }
                 }} className="inline-block">
@@ -98,7 +98,7 @@ export default async function UserDashboard(params: {
                   try {
                     const result = await removeRole(formData);
                     alert(result.message); // Display message to the user
-                  } catch (error: any) {
+                  } catch (error: Error | any) {
                     alert(error.message || 'An error occurred.');
                   }
                 }} className="inline-block">
