@@ -3,7 +3,7 @@
 import { checkRole } from '@/utils/roles'
 import { clerkClient } from '@clerk/nextjs/server'
 
-export async function setRole(formData: FormData) {
+export async function setRole(formData: FormData): Promise<void> {
   const client = await clerkClient()
 
   // Check that the user trying to set the role is an admin
@@ -21,7 +21,7 @@ export async function setRole(formData: FormData) {
   }
 }
 
-export async function removeRole(formData: FormData) {
+export async function removeRole(formData: FormData): Promise<void> {
   const client = await clerkClient()
 
   try {
