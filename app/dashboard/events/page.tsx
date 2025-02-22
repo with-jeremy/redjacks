@@ -20,7 +20,7 @@ const EventsPage: React.FC = () => {
     async function fetchEvents() {
       console.log("Fetching events...");
       const { data: events, error } = await supabase
-        .from("events")
+        .from("rje_events")
         .select("*")
         .order("start_time", { ascending: true });
 

@@ -26,7 +26,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ eventId }) => {
         async function fetchEvent() {
             console.log(`Fetching event with ID: ${eventId}`);
             const { data: event, error } = await supabase
-                .from("events")
+                .from("rje_events")
                 .select("*")
                 .eq("id", eventId)
                 .single();
