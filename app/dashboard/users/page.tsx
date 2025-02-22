@@ -3,22 +3,20 @@ import { checkRole } from '@/utils/roles'
 import { SearchUsers } from './SearchUsers'
 import { clerkClient } from '@clerk/nextjs/server'
 import { removeRole, setRole } from './_actions'
-import { User } from '@clerk/nextjs/dist/types/server'
 
-interface UserDashboardProps {
+export default async function UserDashboard(params: {
   searchParams: Promise<{ search?: string }>
-}
-
-export default async function UserDashboard({ searchParams }: UserDashboardProps) {
+}) {
   if (!checkRole('admin')) {
     redirect('/')
   }
 
-  const query = (await searchParams).search
+  const query = (await params.searchParams).search
 
   const client = await clerkClient()
 
-  const users: User[] = query ? (await client.users.getUserList({ query })).data : []
+  const users = query ? (await client.users.getUserList({ query })).data : []
+
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
@@ -34,7 +32,7 @@ export default async function UserDashboard({ searchParams }: UserDashboardProps
 
               <div className="text-gray-100">
                 {
-                  user.emailAddresses.find((email) => email.id === user.primaryEmailAddressId)
+                  user.emailAddresses.find((email: { id: string; emailAddress: string }) => email.id === user.primaryEmailAddressId)
                     ?.emailAddress
                 }
               </div>
