@@ -3,19 +3,22 @@ import { checkRole } from '@/utils/roles'
 import { SearchUsers } from './SearchUsers'
 import { clerkClient } from '@clerk/nextjs/server'
 import { removeRole, setRole } from './_actions'
+import { User } from '@clerk/nextjs/dist/types/server'
 
-export default async function UserDashboard(params: {
+interface UserDashboardProps {
   searchParams: Promise<{ search?: string }>
-}) {
+}
+
+export default async function UserDashboard({ searchParams }: UserDashboardProps) {
   if (!checkRole('admin')) {
     redirect('/')
   }
 
-  const query = (await params.searchParams).search
+  const query = (await searchParams).search
 
   const client = await clerkClient()
 
-  const users = query ? (await client.users.getUserList({ query })).data : []
+  const users: User[] = query ? (await client.users.getUserList({ query })).data : []
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
@@ -39,7 +42,14 @@ export default async function UserDashboard(params: {
               <div className="text-gray-100">{user.publicMetadata.role as string}</div>
 
               <div className="mt-4 space-y-2 space-x-2">
-                <form action={setRole} className="inline-block">
+                <form action={async (formData) => {
+                  try {
+                    const result = await setRole(formData);
+                    alert(result.message); // Display message to the user
+                  } catch (error: any) {
+                    alert(error.message || 'An error occurred.');
+                  }
+                }} className="inline-block">
                   <input type="hidden" value={user.id} name="id" />
                   <input type="hidden" value="admin" name="role" />
                   <button
@@ -50,7 +60,14 @@ export default async function UserDashboard(params: {
                   </button>
                 </form>
 
-                <form action={setRole} className="inline-block">
+                <form action={async (formData) => {
+                  try {
+                    const result = await setRole(formData);
+                    alert(result.message); // Display message to the user
+                  } catch (error: any) {
+                    alert(error.message || 'An error occurred.');
+                  }
+                }} className="inline-block">
                   <input type="hidden" value={user.id} name="id" />
                   <input type="hidden" value="venue-owner" name="role" />
                   <button
@@ -61,7 +78,14 @@ export default async function UserDashboard(params: {
                   </button>
                 </form>
 
-                <form action={setRole} className="inline-block">
+                <form action={async (formData) => {
+                  try {
+                    const result = await setRole(formData);
+                    alert(result.message); // Display message to the user
+                  } catch (error: any) {
+                    alert(error.message || 'An error occurred.');
+                  }
+                }} className="inline-block">
                   <input type="hidden" value={user.id} name="id" />
                   <input type="hidden" value="moderator" name="role" />
                   <button
@@ -72,7 +96,14 @@ export default async function UserDashboard(params: {
                   </button>
                 </form>
 
-                <form action={removeRole} className="inline-block">
+                <form action={async (formData) => {
+                  try {
+                    const result = await removeRole(formData);
+                    alert(result.message); // Display message to the user
+                  } catch (error: any) {
+                    alert(error.message || 'An error occurred.');
+                  }
+                }} className="inline-block">
                   <input type="hidden" value={user.id} name="id" />
                   <button
                     type="submit"
@@ -86,6 +117,6 @@ export default async function UserDashboard(params: {
           )
         })}
       </div>
-      </div>
+    </div>
   )
 }
