@@ -1,17 +1,9 @@
 import Link from "next/link"
-
-interface Event {
-  show_title: string;
-  start_time: string;
-  door_time: string;
-  price: number;
-  show_flyer_url?: string;
-}
-
-export default function EventList({ events }: { events: Event }) {
+import { Events } from "@/types/globals"
+export default function EventList({ events }: { events: Events }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {events.map((event) => (
+      {events.map((event: Events[number]) => (
         <Link href={`/events/${event.id}`} key={event.id} className="block">
           <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow text-center">
             <h2 className="text-xl font-semibold mb-2">{event.show_title}</h2>

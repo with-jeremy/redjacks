@@ -10,3 +10,16 @@ declare global {
     }
   }
 }
+
+export type Events = {
+  capacity: number
+          created_at: string
+          created_by: string
+          description: string
+          door_time: string
+          id: number
+          name: string
+          price: number
+          start_time: string
+          updated_at: string
+}

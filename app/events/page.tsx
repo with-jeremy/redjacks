@@ -1,11 +1,15 @@
 import EventList from "@/app/components/EventList";
 import { Dancing_Script } from "next/font/google"
-import { supabase } from "@/lib/supabaseClient";
+import { db } from "@/lib/supabaseClient";
+import { Events } from "@/types/globals";
 
 const dancingScript = Dancing_Script({ subsets: ["latin"] })
 
 export default async function Home() {
-  const { data: events, error } = await supabase.from("rje_events").select("*").order("start_time", { ascending: true })
+  const { data: events } = await db
+    .from<string, Events>("events")
+    .select("*")
+    .order("start_time", { ascending: true });
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

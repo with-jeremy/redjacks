@@ -6,20 +6,14 @@ import {
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
-import { useRouter } from 'next/navigation'; // Update import statement
-import convertToSubcurrency from "@/lib/convertToSubcurrency";
-import { loadStripe } from '@stripe/stripe-js';
+import { useRouter } from 'next/navigation'; 
 
-// Ensure you are using the test publishable key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY);
-
-const CheckoutPage = ({ amount }: { amount: number}) => {
+const CheckoutPage = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter(); // Update usage
-
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -45,7 +39,6 @@ const CheckoutPage = ({ amount }: { amount: number}) => {
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log("Payment succeeded:", paymentIntent);
-      router.push('/payment-success');
     } else {
       console.error("Payment failed:", paymentIntent);
       setErrorMessage("Payment failed. Please try again.");
