@@ -1,7 +1,7 @@
 export {}
 
 // Create a type for the roles
-export type Roles = 'admin' | 'venue-owner' | 'venue-staff'| 'customer' | 'band-manager' | 'band-member'
+export type Roles = 'admin' 
 
 declare global {
   interface CustomJwtSessionClaims {
@@ -11,15 +11,24 @@ declare global {
   }
 }
 
-export type Events = {
+export type Shows = {
   capacity: number
-          created_at: string
-          created_by: string
-          description: string
-          door_time: string
-          id: number
-          name: string
-          price: number
-          start_time: string
-          updated_at: string
-}
+  created_at: string
+  created_by: string
+  description: string
+  door_time: string
+  id: number
+  name: string
+  price: number
+  show_flyer: string
+  start_time: string
+  updated_at: string
+};
+export type Tickets = {
+  created_at: string;
+  show_id: number | null;
+  id: number;
+  stripe_confirmation: string;
+  updated_at: string;
+  user_id: number;
+  };

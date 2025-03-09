@@ -4,12 +4,13 @@
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from '@/lib/supabaseClient';
+import { db } from '@/lib/supabaseClient';
+import { Shows } from '@/types/globals';
+import { v4 as uuid } from 'uuid';
 
-export default function EventForm() {
-  const [showTitle, setShowTitle] = useState("");
+export default function ShowForm() {
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [doorTime, setDoorTime] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -40,10 +41,10 @@ export default function EventForm() {
 
       if (showFlyer) {
         const fileExt = showFlyer.name.split(".").pop();
-        const fileName = `${uuidv4()}.${fileExt}`;
+        const fileName = `${uuid()}.${fileExt}`;
         const filePath = `public/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await db.storage
           .from("showPosters")
           .upload(filePath, showFlyer, {
             cacheControl: "3600",
@@ -55,11 +56,9 @@ export default function EventForm() {
           throw new Error(`Could not upload image: ${uploadError.message}. Please check your storage bucket policies.`);
         }
 
-        const { data: publicUrlData } = supabase.storage
+        const { data: publicUrlData } = db.storage
           .from("showPosters")
           .getPublicUrl(filePath);
-
-        
 
         showFlyerUrl = publicUrlData.publicUrl;
       }
@@ -68,32 +67,34 @@ export default function EventForm() {
         throw new Error("User ID not found.");
       }
 
-      const { error: insertError } = await supabase.from("events").insert([
-        {
-          show_title: showTitle,
-          description: description,
-          door_time: doorTime,
-          start_time: startTime,
-          capacity: capacity,
-          show_flyer_url: showFlyerUrl,
-          price: price,
-          user_id: user.id,
-        },
-      ]);
+      const newShow: Omit<Shows, 'id' | 'created_at' | 'updated_at'> = {
+        capacity: capacity || 0,
+        created_by: user.id,
+        description: description,
+        door_time: doorTime,
+        name: name,
+        price: price || 0,
+        show_flyer: showFlyerUrl,
+        start_time: startTime,
+      };
+
+      const { error: insertError } = await db
+        .from<Shows>("shows")
+        .insert([newShow]);
 
       if (insertError) {
         console.error("Database insert error:", insertError);
-        throw new Error(`Could not create event: ${insertError.message}`);
+        throw new Error(`Could not create show: ${insertError.message}`);
       }
 
-      router.push("/dashboard/events");
+      router.push("/dashboard/shows");
       router.refresh();
     } catch (err: unknown) {
-      console.error("Error creating event:", err);
+      console.error("Error creating show:", err);
       if (err instanceof Error) {
-        setError(`Error creating event: ${err.message}`);
+        setError(`Error creating show: ${err.message}`);
       } else {
-        setError("Error creating event: An unknown error occurred.");
+        setError("Error creating show: An unknown error occurred.");
       }
     } finally {
       setIsLoading(false);
@@ -104,14 +105,14 @@ export default function EventForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="text-red-500">{error}</div>}
       <div>
-        <label htmlFor="showTitle" className="block mb-2 text-white">
+        <label htmlFor="name" className="block mb-2 text-white">
           Show Title
         </label>
         <input
-          id="showTitle"
+          id="name"
           type="text"
-          value={showTitle}
-          onChange={(e) => setShowTitle(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
           className="w-full p-2 border rounded text-black"
         />

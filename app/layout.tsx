@@ -33,7 +33,7 @@ export default function RootLayout({
           <nav className="bg-background border-b border-blood">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <div className="main-nav flex-1 flex justify-center space-x-28">
-                <Link href="/events" className="text-xl text-blood pt-4">
+                <Link href="/shows" className="text-xl text-blood pt-4">
                   Events
                 </Link>
                 <Link href="/" className={`text-6xl font-bold text-blood ${dancingScript.className}`}>

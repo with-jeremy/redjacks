@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import CheckoutPage from "@/app/components/CheckoutPage";
+import CheckoutForm from "@/app/components/CheckoutForm";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { useUser } from '@clerk/nextjs';
+import { Shows } from '@/types/globals';
+import Image from 'next/image';
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not set");
@@ -12,21 +15,23 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
-interface Event {
-  show_title: string;
-  start_time: string;
-  door_time: string;
-  price: number;
-  show_flyer_url?: string;
-}
+export default function TicketWrapper({ show }: { show: Shows[number] }) {
+  const { isSignedIn, user, isLoaded } = useUser();
 
-export default function TicketPurchase({ event }: { event: Event }) {
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn || !user) {
+    return <div>Sign in to purchase tickets.</div>;
+  }
+
   const [quantity, setQuantity] = useState(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [checkoutClicked, setCheckoutClicked] = useState(false); // New state
-  const [loading, setLoading] = useState(false); // New state
-  const price = event.price;
+  const [checkoutClicked, setCheckoutClicked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const price = show.price;
   const amount = price * quantity;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +47,7 @@ export default function TicketPurchase({ event }: { event: Event }) {
 
   const handleCheckoutClick = () => {
     setCheckoutClicked(true);
-    setLoading(true); // Set loading to true when checkout is clicked
+    setLoading(true);
   };
 
   useEffect(() => {
@@ -57,22 +62,13 @@ export default function TicketPurchase({ event }: { event: Event }) {
         .then((res) => res.json())
         .then((data) => {
           setClientSecret(data.clientSecret);
-          setLoading(false); // Set loading to false when clientSecret is received
+          setLoading(false);
         });
     }
   }, [amount, checkoutClicked]);
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4 text-center">{event.show_title}</h1>
-      <div className="mb-4 text-center">
-        <p>
-          <strong>{new Date(event.start_time).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })} at {new Date(event.door_time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })} </strong>
-        </p>     
-        
-      </div>
-      <div className="bg-white text-black p-4 rounded shadow-md mb-4">
-        <h2 className="text-2xl font-bold mb-2 text-center">Buy Tickets</h2>
+   
         <div className="text-center mb-4">
           <p>{`$${price} ea  `} 
             <input 
@@ -91,35 +87,20 @@ export default function TicketPurchase({ event }: { event: Event }) {
           {!checkoutClicked && (
             <button 
               className="border rounded px-4 py-2 mt-4 bg-blood text-white border-blood"
-              onClick={handleCheckoutClick} // Add onClick handler
+              onClick={handleCheckoutClick}
             >
               Checkout
             </button>
           )}
           {loading && <p>Loading...</p>}
           {error && <p className="text-red-500">{error}</p>}
-        </div>
-        <div className="text-center">
           {checkoutClicked && clientSecret && (
             <Elements key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutPage amount={amount} />
+              <CheckoutForm showId={show.id} />
             </Elements>
           )}
         </div>
-      </div>
-      {event.show_flyer_url && (
-        <img
-          src={event.show_flyer_url || "/placeholder.svg"}
-          alt="Show Flyer"
-          className="mt-2 max-w-full mx-auto h-auto"
-        />
-      )}    
-      <style jsx>{`
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-          opacity: 1;
-        }
-      `}</style>
-    </div>
+     
+
   );
 }

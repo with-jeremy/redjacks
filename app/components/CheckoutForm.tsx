@@ -2,18 +2,28 @@
 
 import React, { useState } from "react";
 import {
-  useStripe, 
+  useStripe,
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
+import { useUser } from "@clerk/nextjs";
 
-const CheckoutPage = () => {
+interface CheckoutFormProps {
+  showId: number;
+}
+
+const CheckoutForm = ({ showId }: CheckoutFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { user } = useUser();
 
+  React.useEffect(() => {
+    console.log("CheckoutForm loaded with showId:", showId, "userId:", user?.id);
+  }, [showId, user?.id]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -28,7 +38,7 @@ const CheckoutPage = () => {
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/payment-success`,
+        return_url: `${window.location.origin}/account`,
       },
       redirect: 'if_required'
     });
@@ -39,10 +49,25 @@ const CheckoutPage = () => {
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log("Payment succeeded:", paymentIntent);
-    } else {
-      console.error("Payment failed:", paymentIntent);
-      setErrorMessage("Payment failed. Please try again.");
       setLoading(false);
+      console.log("Ready to create ticket with:", { showId, userId: user?.id, paymentIntent });
+      
+      const response = await fetch("/api/create-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          showId,
+          userId: user?.id,
+          paymentIntentId: paymentIntent.id
+        })
+      });
+
+      if (!response.ok) {
+        console.error("Failed to create ticket:", response);
+        setErrorMessage("Failed to create ticket. Please try again.");
+      } else {
+        router.push("/account");
+      }
     }
   };
 
@@ -57,4 +82,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default CheckoutForm;
