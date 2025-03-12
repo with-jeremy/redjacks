@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing ticketId" }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from("tickets")
       .update({ isValid: false })
       .eq("id", ticketId)

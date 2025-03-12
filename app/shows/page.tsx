@@ -1,17 +1,18 @@
 import ShowList from "@/app/components/ShowList";
 import { Dancing_Script } from "next/font/google"
 import { db } from "@/lib/supabaseClient";
-import { Shows } from "@/types/globals";
+import { Tables } from "@/lib/supabase";
 
-const dancingScript = Dancing_Script({ subsets: ["latin"] })
+type ShowRow = Tables<'shows'>;
+const dancingScript = Dancing_Script({ subsets: ["latin"], weight: "400" });
 
-export default async function Home() {
+export default async function ShowsPage() {
   const { data, error } = await db
-    .from<Shows>("shows")
+    .from<ShowRow>("shows")
     .select("*")
     .order("start_time", { ascending: true });
 
-  const shows: Shows[] = data || [];
+  const shows: ShowRow[] = (data as ShowRow[]) || [];
 
   if (error) {
     return <div>Error fetching shows: {error.message}</div>;

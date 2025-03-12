@@ -1,13 +1,12 @@
 import { Dancing_Script } from "next/font/google"
 import { db } from "@/lib/supabaseClient";
-import { Shows } from "@/types/globals";
 import Link from "next/link";
 import Image from "next/image";
 
 const dancingScript = Dancing_Script({ subsets: ["latin"] })
 
 export default async function Home() {
-  const { data: shows, error } = await db.from<Shows>("shows").select("*").order("start_time", { ascending: true })
+  const { data: shows, error } = await db.from("shows").select("*").order("start_time", { ascending: true })
 
   if (error) {
     return <div>Error fetching shows: {error.message}</div>;
@@ -28,9 +27,9 @@ export default async function Home() {
             <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow text-center">
               <h2 className="text-xl font-semibold mb-2">{show.name}</h2>
               <p className="text-gray-700 mb-2">{show.description}</p>
-              {show.show_flyer_url && (
+              {show.show_flyer && (
                <Image
-               src={show.show_flyer_url || "/placeholder.svg"}
+               src={show.show_flyer || "/placeholder.svg"}
                alt="Show Flyer"
                className="mt-2 max-w-full h-auto mx-auto"
                style={{ maxHeight: "400px" }}

@@ -8,12 +8,11 @@ import {
 } from "@stripe/react-stripe-js";
 import { useRouter } from 'next/navigation';
 import { useUser } from "@clerk/nextjs";
+import { Tables } from '@/lib/supabase';
+type Show = Tables<'shows'>;
 
-interface CheckoutFormProps {
-  showId: number;
-}
 
-const CheckoutForm = ({ showId }: CheckoutFormProps) => {
+const CheckoutForm = ({ id }: Show ) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -22,8 +21,8 @@ const CheckoutForm = ({ showId }: CheckoutFormProps) => {
   const { user } = useUser();
 
   React.useEffect(() => {
-    console.log("CheckoutForm loaded with showId:", showId, "userId:", user?.id);
-  }, [showId, user?.id]);
+    console.log("CheckoutForm loaded with showId:", id, "userId:", user?.id);
+  }, [id, user?.id]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -50,13 +49,13 @@ const CheckoutForm = ({ showId }: CheckoutFormProps) => {
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log("Payment succeeded:", paymentIntent);
       setLoading(false);
-      console.log("Ready to create ticket with:", { showId, userId: user?.id, paymentIntent });
+      console.log("Ready to create ticket with showId:", id, "userId:", user?.id, "paymentIntentId:", paymentIntent );
       
       const response = await fetch("/api/create-ticket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          showId,
+          showId: id,
           userId: user?.id,
           paymentIntentId: paymentIntent.id
         })

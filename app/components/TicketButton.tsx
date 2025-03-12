@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import TicketWrapper from './TicketWrapper';
+import { Tables } from '@/lib/supabase';
 
 interface TicketButtonProps {
-  show: any; // Replace 'any' with the actual type of 'show'
+  show: Tables<'shows'>; // Replace 'any' with the actual type of 'show'
 }
 
 const TicketButton: React.FC<TicketButtonProps> = ({ show }) => {
