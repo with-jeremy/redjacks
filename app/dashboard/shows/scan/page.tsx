@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import type { IDetectedBarcode } from '@yudiel/react-qr-scanner';
 
@@ -8,9 +8,21 @@ const ScanPage = () => {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [showOverlay, setShowOverlay] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (showOverlay) {
+      const timer = setTimeout(() => {
+        setShowOverlay(false);
+        setScanResult(null);
+        setFullName(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showOverlay]);
 
   const handleScan = useCallback(async (detectedCodes: IDetectedBarcode[]) => {
-    if (detectedCodes.length === 0) return;
+    if (detectedCodes.length === 0 || showOverlay) return;
     const result = detectedCodes[0].rawValue; // Assuming 'rawValue' is the correct property
     setScanResult(result);
     setError(null);
@@ -41,12 +53,13 @@ const ScanPage = () => {
       setScanResult(ticketId);
       setFullName(fullName);
       setError(null);
+      setShowOverlay(true);
 
     } catch (err: any) {
       setError(`Failed to invalidate ticket: ${err.message}`);
       setScanResult(null);
     }
-  }, []);
+  }, [showOverlay]);
 
   const handleError = useCallback((err: any) => {
     setError(err.message);
@@ -62,6 +75,7 @@ const ScanPage = () => {
       />
       {scanResult && <p>Scanned Ticket ID: {scanResult} for {fullName}</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {showOverlay && <div className="overlay">Ticket {scanResult} for {fullName} has been invalidated</div>}
     </div>
   );
 };
