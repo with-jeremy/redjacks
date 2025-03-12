@@ -1,5 +1,7 @@
 import { db } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
+import { clerkClient } from '@clerk/nextjs/server'
+
 
 export async function POST(request: Request) {
   try {
@@ -27,8 +29,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
+    const ticket = data[0];
+    const userId = ticket.user_id;
+    const client = await clerkClient();
+
+    const user = await client.users.getUser(userId);
+    const fullName = user.fullName || "Unknown User";
+
     return NextResponse.json(
-      { message: "Ticket invalidated", ticket: data[0] },
+      { message: "Ticket invalidated", ticket, fullName },
       { status: 200 }
     );
   } catch (error) {

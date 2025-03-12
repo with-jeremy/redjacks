@@ -7,11 +7,11 @@ export default function ShowList({ shows }: { shows: Tables<'shows'>[] }) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {shows.map((show: Tables<'shows'>) => (
         <Link href={`/shows/${show.id}`} key={show.id} className="block">
-          <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow text-center">
-            <h2 className="text-xl font-semibold mb-2">{show.name}</h2>
-            <div className="mb-4">
+            <div className="border border-blood rounded-lg p-4 bg-white text-center transform transition-transform duration-300 hover:scale-105 hover:border-2 hover:shadow-lg hover:shadow-red-500">
+            <h2 className="text-xl font-semibold mb-2 text-black">{show.name}</h2>
+            <div className="mb-4 text-black">
               <p>
-                <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
+              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
               </p>
             </div>
             {show.show_flyer && (
@@ -24,7 +24,7 @@ export default function ShowList({ shows }: { shows: Tables<'shows'>[] }) {
               height={400}
               />
             )}
-          </div>
+            </div>
         </Link>
       ))}
     </div>

@@ -2,12 +2,14 @@
 
 import { useState, useCallback } from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner';
+import type { IDetectedBarcode } from '@yudiel/react-qr-scanner';
 
 const ScanPage = () => {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
 
-  const handleScan = useCallback(async (detectedCodes: DetectedBarcode[]) => {
+  const handleScan = useCallback(async (detectedCodes: IDetectedBarcode[]) => {
     if (detectedCodes.length === 0) return;
     const result = detectedCodes[0].rawValue; // Assuming 'rawValue' is the correct property
     setScanResult(result);
@@ -33,8 +35,12 @@ const ScanPage = () => {
         return;
       }
 
-      // Optionally, show a success message
-      alert(`Ticket ${ticketId} invalidated successfully!`);
+      const data = await response.json();
+      const fullName = data.fullName;
+
+      setScanResult(ticketId);
+      setFullName(fullName);
+      setError(null);
 
     } catch (err: any) {
       setError(`Failed to invalidate ticket: ${err.message}`);
@@ -54,7 +60,7 @@ const ScanPage = () => {
         onError={handleError}
         styles={{ container: { width: '300px' } }}
       />
-      {scanResult && <p>Scanned Ticket ID: {scanResult}</p>}
+      {scanResult && <p>Scanned Ticket ID: {scanResult} for {fullName}</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
     </div>
   );
