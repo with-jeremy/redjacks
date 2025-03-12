@@ -1,19 +1,33 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { checkRole } from '@/utils/roles'
+import { NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, redirectToSignIn } = await auth()
-
-  if (!userId && isProtectedRoute(req)) {
-    // Add custom logic to run before redirecting
-    const hasAccess = await checkRole()
-    if (!hasAccess) {
-      return redirectToSignIn()
+  try {
+    const { userId, sessionClaims } = await auth()
+    
+    // If accessing a protected route
+    if (isProtectedRoute(req)) {
+      // Case 1: User is not logged in
+      if (!userId) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
+      
+      // Case 2: User is logged in but doesn't have admin role
+      const userRole = sessionClaims?.publicMetadata?.role
+      if (userRole !== 'admin') {
+        console.log(`Access denied: User ${userId} with role ${userRole} attempted to access ${req.url}`)
+        return NextResponse.redirect(new URL('/', req.url))
+      }
     }
-    // Allow the user to continue to the protected route
-    return
+    
+    // Allow the user to continue
+    return NextResponse.next()
+  } catch (error) {
+    console.error('Middleware auth error:', error)
+    // Fallback for any errors - redirect to home page
+    return NextResponse.redirect(new URL('/', req.url))
   }
 })
 

@@ -8,6 +8,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export default function AccountPage() {
   const [tickets, setTickets] = useState([]);
@@ -17,7 +18,11 @@ export default function AccountPage() {
   const { user, isLoaded: userLoaded } = useUser();
 
   useEffect(() => {
-    if (!userLoaded) return;
+    // Only fetch tickets if user is logged in and user data is loaded
+    if (!userLoaded || !user) {
+      setIsLoaded(true);
+      return;
+    }
 
     const fetchTickets = async () => {
       const user_id = user?.id;
@@ -93,11 +98,30 @@ export default function AccountPage() {
     setLimit((prevLimit) => prevLimit + 10);
   };
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
+  // Show loading indicator while user data is loading
+  if (!userLoaded) {
+    return <div className="p-4">Loading...</div>;
   }
+
+  // Show login prompt if no user is logged in
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8">
+        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
+        <p className="mb-4">You need to be signed in to view your tickets.</p>
+        <Link href="/" className="px-4 py-2 bg-blood text-white rounded hover:bg-red-800 transition">
+          Go to Sign In
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return <div className="p-4">Loading tickets...</div>;
+  }
+
   if (error) {
-    return <div>{error}</div>;
+    return <div className="p-4 text-red-500">{error}</div>;
   }
 
   // Sort valid tickets by door_time
@@ -119,7 +143,7 @@ export default function AccountPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-4">My Tickets</h1>
-      <p className="mb-4">Manage your tickets here, {user.firstName}.</p>
+      <p className="mb-4">Manage your tickets here, {user.fullName}.</p>
 
       {Object.keys(groupedTickets).length > 0 ? (
         <div>
