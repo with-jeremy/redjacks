@@ -7,7 +7,9 @@ const ScanPage = () => {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleScan = useCallback(async (result: string) => {
+  const handleScan = useCallback(async (detectedCodes: DetectedBarcode[]) => {
+    if (detectedCodes.length === 0) return;
+    const result = detectedCodes[0].rawValue; // Assuming 'rawValue' is the correct property
     setScanResult(result);
     setError(null);
 
@@ -48,9 +50,9 @@ const ScanPage = () => {
     <div>
       <h1>Scan Ticket QR Code</h1>
       <Scanner
-        onResult={handleScan}
+        onScan={handleScan}
         onError={handleError}
-        style={{ width: '300px' }}
+        styles={{ container: { width: '300px' } }}
       />
       {scanResult && <p>Scanned Ticket ID: {scanResult}</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}

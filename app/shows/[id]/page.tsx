@@ -2,11 +2,9 @@ import { db } from "@/lib/supabaseClient";
 import Image from 'next/image';
 import TicketButton from "@/app/components/TicketButton";
 
-interface ShowPageProps {
-  params: { id: string };
-}
 
-export default async function ShowDetail( { params }: ShowPageProps) {
+
+export default async function ShowDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { data: show, error } = await db.from("shows").select("*").eq("id", id).single();
   

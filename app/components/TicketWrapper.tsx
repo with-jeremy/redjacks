@@ -96,7 +96,7 @@ export default function TicketWrapper({ show }: { show: Show }) {
       {error && <p className="text-red-500">{error}</p>}
       {checkoutClicked && clientSecret && (
         <Elements key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
-          <CheckoutForm id={show.id} />
+          <CheckoutForm show={show} />
         </Elements>
       )}
     </div>

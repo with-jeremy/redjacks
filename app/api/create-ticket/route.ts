@@ -25,6 +25,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Ticket created successfully." }, { status: 200 });
   } catch (error: unknown) {
     console.error("Error creating ticket:", error);
-    return NextResponse.json({ message: error.message || "An unexpected error occurred." }, { status: 500 });
+    return NextResponse.json({ message: (error as Error).message || "An unexpected error occurred." }, { status: 500 });
   }
 }

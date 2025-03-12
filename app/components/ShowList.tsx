@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Tables } from "@/types/globals"
+import { Tables } from "@/lib/supabase"
 
 export default function ShowList({ shows }: { shows: Tables<'shows'>[] }) {
   return (

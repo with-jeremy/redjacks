@@ -12,7 +12,7 @@ import { Tables } from '@/lib/supabase';
 type Show = Tables<'shows'>;
 
 
-const CheckoutForm = ({ id }: Show ) => {
+const CheckoutForm = ({ show }: { show: Show }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -21,8 +21,8 @@ const CheckoutForm = ({ id }: Show ) => {
   const { user } = useUser();
 
   React.useEffect(() => {
-    console.log("CheckoutForm loaded with showId:", id, "userId:", user?.id);
-  }, [id, user?.id]);
+    console.log("CheckoutForm loaded with showId:", show.id, "userId:", user?.id);
+  }, [show.id, user?.id]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -49,15 +49,15 @@ const CheckoutForm = ({ id }: Show ) => {
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log("Payment succeeded:", paymentIntent);
       setLoading(false);
-      console.log("Ready to create ticket with showId:", id, "userId:", user?.id, "paymentIntentId:", paymentIntent );
+      console.log("Ready to create ticket with showId:", show.id, "userId:", user?.id, "paymentIntentId:", paymentIntent );
       
       const response = await fetch("/api/create-ticket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          showId: id,
+          showId: show.id,
           userId: user?.id,
-          paymentIntentId: paymentIntent.id
+          paymentIntentId: paymentIntent.id,
         })
       });
 

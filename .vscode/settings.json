@@ -1,3 +1,4 @@
 {
-  "vsintellicode.typescript.completionsEnabled": true
+  "vsintellicode.typescript.completionsEnabled": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

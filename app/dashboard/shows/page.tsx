@@ -2,10 +2,13 @@
 import { db } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import ShowList from '@/app/components/ShowList';
-import { Shows } from '@/types/globals';
+import { Tables } from '@/lib/supabase';
+
+type Shows = Tables<'shows'>;
+
 export default async function ShowDash() {
   const { data: shows, error } = await db
-    .from<Shows, Shows>("shows")
+    .from("shows")
     .select("*")
     .order("start_time", { ascending: true });
 

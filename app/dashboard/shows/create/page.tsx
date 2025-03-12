@@ -6,8 +6,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { db } from '@/lib/supabaseClient';
-import { Shows } from '@/types/globals';
+import { TablesInsert } from "@/lib/supabase";
 import { v4 as uuid } from 'uuid';
+
+type ShowInsert = TablesInsert<"shows">;
 
 export default function ShowForm() {
   const [name, setName] = useState("");
@@ -67,7 +69,7 @@ export default function ShowForm() {
         throw new Error("User ID not found.");
       }
 
-      const newShow: Omit<Shows, 'id' | 'created_at' | 'updated_at'> = {
+      const newShow: ShowInsert = {
         capacity: capacity || 0,
         created_by: user.id,
         description: description,
@@ -79,7 +81,7 @@ export default function ShowForm() {
       };
 
       const { error: insertError } = await db
-        .from<Shows>("shows")
+        .from("shows")
         .insert([newShow]);
 
       if (insertError) {
