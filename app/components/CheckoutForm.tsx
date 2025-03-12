@@ -11,8 +11,13 @@ import { useUser } from "@clerk/nextjs";
 import { Tables } from '@/lib/supabase';
 type Show = Tables<'shows'>;
 
+interface CheckoutFormProps {
+  show: Show;
+  quantity: number;
+  createTickets: (showId: string, userId: string, paymentIntentId: string, quantity: number) => Promise<boolean>;
+}
 
-const CheckoutForm = ({ show }: { show: Show }) => {
+const CheckoutForm = ({ show, quantity, createTickets }: CheckoutFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -49,21 +54,12 @@ const CheckoutForm = ({ show }: { show: Show }) => {
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log("Payment succeeded:", paymentIntent);
       setLoading(false);
-      console.log("Ready to create ticket with showId:", show.id, "userId:", user?.id, "paymentIntentId:", paymentIntent );
-      
-      const response = await fetch("/api/create-ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          showId: show.id,
-          userId: user?.id,
-          paymentIntentId: paymentIntent.id,
-        })
-      });
+      console.log("Ready to create tickets with showId:", show.id, "userId:", user?.id, "paymentIntentId:", paymentIntent.id, "quantity:", quantity);
 
-      if (!response.ok) {
-        console.error("Failed to create ticket:", response);
-        setErrorMessage("Failed to create ticket. Please try again.");
+      const success = await createTickets(show.id, user?.id, paymentIntent.id, quantity);
+
+      if (!success) {
+        setErrorMessage("Failed to create tickets. Please try again.");
       } else {
         router.push("/account");
       }
@@ -71,11 +67,13 @@ const CheckoutForm = ({ show }: { show: Show }) => {
   };
 
   return (
-    <form className="bg-white p-2 rounded-md" onSubmit={handleSubmit}>
-      <PaymentElement />
+    <form className="bg-blue-200 mt-8 max-w-[500px] p-2 m-auto rounded-md" onSubmit={handleSubmit}>
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <PaymentElement />
+      </div>
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
       <button className="border rounded px-4 py-2 mt-4 bg-blood text-white border-blood" disabled={loading}>
-        <strong>{loading ? "Processing..." : "Buy Now"}</strong>
+      <strong>{loading ? "Processing..." : "Buy Now"}</strong>
       </button>
     </form>
   );

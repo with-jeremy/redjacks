@@ -7,24 +7,27 @@ export async function POST(req: Request) {
   console.log("create-ticket API hit");
 
   try {
-    const { showId, paymentIntentId, userId } = await req.json();
+    const { showId, paymentIntentId, userId, quantity } = await req.json();
 
-    console.log("Received data:", { showId, paymentIntentId, userId });
+    console.log("Received data:", { showId, paymentIntentId, userId, quantity });
 
-    // Create ticket record in the database
-    const { error } =  await db.from('tickets')
-      .insert([
-        { show_id: showId, stripe_confirmation: paymentIntentId, user_id: userId },
-      ]).select();
+    // Create ticket records in the database
+    const tickets = Array.from({ length: quantity }, () => ({
+      show_id: showId,
+      stripe_confirmation: paymentIntentId,
+      user_id: userId,
+    }));
+
+    const { error } = await db.from('tickets').insert(tickets).select();
 
     if (error) {
-      console.error("Failed to create ticket record:", error);
-      return NextResponse.json({ message: "Failed to create ticket record." }, { status: 500 });
+      console.error("Failed to create ticket records:", error);
+      return NextResponse.json({ message: "Failed to create ticket records." }, { status: 500 });
     }
 
-    return NextResponse.json({ message: "Ticket created successfully." }, { status: 200 });
+    return NextResponse.json({ message: "Tickets created successfully." }, { status: 200 });
   } catch (error: unknown) {
-    console.error("Error creating ticket:", error);
+    console.error("Error creating tickets:", error);
     return NextResponse.json({ message: (error as Error).message || "An unexpected error occurred." }, { status: 500 });
   }
 }

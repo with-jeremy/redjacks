@@ -7,6 +7,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useUser } from '@clerk/nextjs';
 import { Tables } from '@/lib/supabase';
+import { useTicketCreation } from "@/lib/useTicketCreation";
 
 type Show = Tables<'shows'>;
 
@@ -21,28 +22,28 @@ export default function TicketWrapper({ show }: { show: Show }) {
   const [quantity, setQuantity] = useState<number>(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [checkoutClicked, setCheckoutClicked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [checkoutClicked, setCheckoutClicked] = useState(false);
+  const { createTickets } = useTicketCreation();
 
   const price = show.price;
   const amount = price * quantity;
 
   useEffect(() => {
-    if (checkoutClicked) {
-      fetch("/api/create-payment-intent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: convertToSubcurrency(amount) }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setClientSecret(data.clientSecret);
-          setLoading(false);
-        });
-    }
-  }, [amount, checkoutClicked]);
+    setLoading(true);
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: convertToSubcurrency(amount) }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientSecret(data.clientSecret);
+        setLoading(false);
+      });
+  }, [amount]);
 
   if (!isLoaded) {
     return <div>Loading...</div>;
@@ -65,7 +66,6 @@ export default function TicketWrapper({ show }: { show: Show }) {
 
   const handleCheckoutClick = () => {
     setCheckoutClicked(true);
-    setLoading(true);
   };
 
   return (
@@ -92,11 +92,14 @@ export default function TicketWrapper({ show }: { show: Show }) {
           Checkout
         </button>
       )}
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="m-auto flex w-48 absolute left-1/2 transform -translate-x-1/2 z-10 bg-white rounded-10 items-center justify-center pointer-events-none">
+          <p className="text-4xl">Loading...</p>
+        </div>)}
       {error && <p className="text-red-500">{error}</p>}
-      {checkoutClicked && clientSecret && (
+      {checkoutClicked &&clientSecret && (
         <Elements key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
-          <CheckoutForm show={show} />
+          <CheckoutForm show={show} quantity={quantity} createTickets={createTickets} />
         </Elements>
       )}
     </div>

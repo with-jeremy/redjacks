@@ -1,8 +1,6 @@
 import { db } from "@/lib/supabaseClient";
 import Image from 'next/image';
-import TicketButton from "@/app/components/TicketButton";
-
-
+import TicketWrapper from "@/app/components/TicketWrapper";
 
 export default async function ShowDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,10 +18,11 @@ export default async function ShowDetail({ params }: { params: Promise<{ id: str
     <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow text-center">
       <h2 className="text-xl font-semibold mb-2">{show.name}</h2>
       <p className="text-white-700 mb-2">{show.description}</p>
-      <p className="text-white-700 mb-2">{show.door_time}</p>
-      <p className="text-white-700 mb-2">${show.price} Each</p>
+      <p>
+              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
+              </p>
       
-      <TicketButton show={show} />
+      <TicketWrapper show={show} />
       
       {show.show_flyer && (
         <div className="flex justify-center">

@@ -11,6 +11,8 @@ export default function AccountPage() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [ticketStatus, setTicketStatus] = useState({});
+  const [showValidOnly, setShowValidOnly] = useState(false);
+  const [limit, setLimit] = useState(10);
   const { user, isLoaded: userLoaded } = useUser();
 
   useEffect(() => {
@@ -31,7 +33,8 @@ export default function AccountPage() {
             name
           )
         `)
-        .eq('user_id', user_id || '');
+        .eq('user_id', user_id || '')
+        .limit(limit);
 
       if (error) {
         console.error('Error fetching tickets:', error);
@@ -59,7 +62,11 @@ export default function AccountPage() {
     return () => {
       db.removeChannel(ticketChannel);
     };
-  }, [userLoaded]);
+  }, [userLoaded, limit]);
+
+  const handleLoadMore = () => {
+    setLimit((prevLimit) => prevLimit + 10);
+  };
 
   if (!isLoaded) {
     return <div>Loading...</div>;
@@ -69,35 +76,48 @@ export default function AccountPage() {
     return <div>{error}</div>;
   }
 
+  const filteredTickets = showValidOnly ? tickets.filter(ticket => ticket.isValid) : tickets;
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-4">My Tickets</h1>
       <p className="mb-4">Manage your tickets here, {user.firstName}.</p>
+      <label className="mb-4 block">
+        <input
+          type="checkbox"
+          checked={showValidOnly}
+          onChange={(e) => setShowValidOnly(e.target.checked)}
+        />
+        See only valid tickets
+      </label>
 
-      {tickets.length > 0 ? (
+      {filteredTickets.length > 0 ? (
         <div className="overflow-x-auto">
           <ul className="flex space-x-4">
-            {tickets.map((ticket) => (
+            {filteredTickets.map((ticket) => (
               <li key={ticket.id} className="min-w-[300px] bg-gray-200 border p-4 relative">
-                <div className="absolute top-0 right-0 bg-white p-1 rounded-full">
-                  {ticketStatus[ticket.id] ? (
-                    <span className="bg-green-500 w-4 h-4 rounded-full block"></span>
-                  ) : (
-                    <span className="bg-red-500 w-4 h-4 rounded-full block"></span>
-                  )}
-                </div>
-                <div className="flex flex-col items-center">
-                  <h2 className="text-xl font-bold">{ticket.shows?.name}</h2>
-                  <p>
-                    {ticket.shows?.door_time ? new Date(ticket.shows.door_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" }) : 'Invalid date'} @ {ticket.shows?.door_time ? new Date(ticket.shows.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true }) : 'Invalid date'}
-                  </p>
-                  {ticketStatus[ticket.id] && (
-                    <QRCodeSVG value={ticket.id.toString()} />
-                  )}
-                </div>
+              <div className="absolute top-0 right-0 bg-white p-1 rounded-full">
+                {ticketStatus[ticket.id] ? (
+                <span className="bg-green-500 w-4 h-4 rounded-full block"></span>
+                ) : (
+                <span className="bg-red-500 w-4 h-4 rounded-full block"></span>
+                )}
+              </div>
+              <div className="flex flex-col items-center">
+                <h2 className="text-xl font-bold">{ticket.shows?.name}</h2>
+                <p>
+                {ticket.shows?.door_time ? new Date(ticket.shows.door_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" }) : 'Invalid date'} @ {ticket.shows?.door_time ? new Date(ticket.shows.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true }) : 'Invalid date'}
+                </p>
+                {ticketStatus[ticket.id] && (
+                <QRCodeSVG value={ticket.id.toString()} />
+                )}
+              </div>
               </li>
             ))}
           </ul>
+          {filteredTickets.length >= limit && (
+            <button onClick={handleLoadMore} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Load More</button>
+          )}
         </div>
       ) : (
         <p>No tickets found for this user.</p>
