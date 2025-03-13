@@ -43,7 +43,6 @@ export default function RootLayout({
               <div className="auth-nav flex items-center space-x-4">
                 <SignedOut>
                   <SignInButton />
-                  <SignUpButton />
                 </SignedOut>
                 <SignedIn>
                   <UserButton />

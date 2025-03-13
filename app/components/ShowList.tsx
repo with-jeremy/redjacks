@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Tables } from "@/lib/supabase"
 
-export default function ShowList({ shows }: { shows: Tables<'shows'>[] }) {
+export default function ShowList({ shows, isAdminDashboard = false }: { shows: Tables<'shows'>[], isAdminDashboard?: boolean }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {shows.map((show: Tables<'shows'>) => (
@@ -13,6 +13,11 @@ export default function ShowList({ shows }: { shows: Tables<'shows'>[] }) {
               <p>
               <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
               </p>
+              {isAdminDashboard && show.capacity !== undefined && (
+                <p className="mt-2 text-sm">
+                  <strong>Capacity:</strong> {show.capacity}
+                </p>
+              )}
             </div>
             {show.show_flyer && (
               <Image
