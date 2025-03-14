@@ -8,7 +8,7 @@ export function useRealTimeShows() {
 
   useEffect(() => {
     const fetchShows = async () => {
-      const { data, error } = await db.from('shows').select('id, name, capacity, tickets (id, isValid)');
+      const { data, error } = await db.from('shows').select('id, name, capacity, door_time, tickets (id, isValid)');
       if (error) {
         console.error('Error fetching shows:', error);
         setError('Error loading shows');

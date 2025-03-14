@@ -20,23 +20,21 @@ export default async function ShowDash() {
   }
 
   return (
-    <div>
-      <div className="grid gap-5 p-5 bg-gray-800">
+    <div className="p-5 bg-gray-800 min-h-screen flex flex-col items-center">
+      <div className="w-full flex justify-around mb-5">
         <Link href="/dashboard/shows/create">
-          <button className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40">
+          <button className="p-5 text-lg bg-blue-500 text-white rounded-lg">
             Create New Show
           </button>
         </Link>
-      </div>
-      <div className="grid gap-5 p-5 bg-gray-800">
         <Link href="/dashboard/shows/scan">
-          <button className="p-5 m-2 text-lg bg-gray-200 text-gray-800 w-40 h-40">
+          <button className="p-5 text-lg bg-blue-500 text-white rounded-lg">
             Scan Tickets For Show
           </button>
         </Link>
       </div>
-      <h1>Events Dashboard</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <h1 className="text-3xl font-bold text-white mb-5">Events Dashboard</h1>
+      <div className="w-full flex flex-wrap justify-center">
         <ShowList shows={shows} isAdminDashboard={true} />
       </div>
     </div>
