@@ -33,6 +33,10 @@ export default function ShowForm() {
     return <div>Sign in to create events.</div>;
   }
 
+  const handleRemoveFlyer = () => {
+    setShowFlyer(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -192,6 +196,12 @@ export default function ShowForm() {
           onChange={(e) => setShowFlyer(e.target.files?.[0] || null)}
           className="w-full p-2 border rounded text-black"
         />
+        {showFlyer && (
+          <div className="relative mt-2">
+            <img src={URL.createObjectURL(showFlyer)} alt="Show Flyer" className="w-full h-auto rounded" />
+            <button type="button" onClick={handleRemoveFlyer} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">X</button>
+          </div>
+        )}
       </div>
       <button
         type="submit"
