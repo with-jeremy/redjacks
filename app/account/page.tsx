@@ -143,7 +143,7 @@ export default function AccountPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-4">My Tickets</h1>
-      <p className="mb-4">Manage your tickets here, {user.fullName}.</p>
+      <p className="mb-4">Manage your tickets here, {(user.fullName as string)} with role {(user.publicMetadata.role as string)}.</p>
 
       {Object.keys(groupedTickets).length > 0 ? (
         <div>
