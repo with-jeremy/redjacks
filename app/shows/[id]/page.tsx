@@ -4,7 +4,7 @@ import TicketWrapper from "@/app/components/TicketWrapper";
 
 export default async function ShowDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { data: show, error } = await db.from("shows").select("*").eq("id", id).single();
+  const { data: show, error } = await db.from("shows").select("*").eq("id", id).gte("date", today).single();
   
   if (error) {
     return <div>Error fetching shows: {error.message}</div>;
