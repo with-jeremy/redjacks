@@ -20,7 +20,7 @@ export default async function ShowDetail({ params }: { params: Promise<{ id: str
       <h2 className="text-xl font-semibold mb-2">{show.name}</h2>
       <p className="text-white-700 mb-2">{show.description}</p>
       <p>
-              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
+              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit", year: "numeric" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
               </p>
       
       <TicketWrapper show={show} />
