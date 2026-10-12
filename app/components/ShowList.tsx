@@ -11,7 +11,7 @@ export default function ShowList({ shows, isAdminDashboard = false }: { shows: T
             <h2 className="text-xl font-semibold mb-2 text-black">{show.name}</h2>
             <div className="mb-4 text-black">
               <p>
-              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
+              <strong>{new Date(show.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit", year: "numeric" })} @ {new Date(show.door_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}</strong>
               </p>
               {isAdminDashboard && show.capacity !== undefined && (
           <p className="mt-2 text-sm">
