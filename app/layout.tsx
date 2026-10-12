@@ -36,7 +36,7 @@ export default function RootLayout({
                   Events
                 </Link>
                 <Link href="/" className={`text-4xl px-6 md:text-6xl font-bold text-blood ${dancingScript.className}`}>
-               <img src='../logo.jpg' height="80" />
+               <img src='../logo.jpg' style="max-height: 80px;" />
                 </Link>
                 <Link href="/account" className="text-xl text-blood pt-4">
                   Tickets
