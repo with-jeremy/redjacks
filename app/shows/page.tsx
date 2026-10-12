@@ -8,6 +8,7 @@ const abel = Abel({ weight: '400', subsets: ['latin'] });
 const dancingScript = Dancing_Script({ subsets: ['latin'] });
 
 export default async function ShowsPage() {
+
   const { data, error } = await db
     .from('shows')
     .select('*')

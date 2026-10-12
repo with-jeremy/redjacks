@@ -4,8 +4,7 @@ import TicketWrapper from "@/app/components/TicketWrapper";
 
 export default async function ShowDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const today = new Date().toISOString().split('T')[0]; // Adjust format if using timestamps
-  const { data: show, error } = await db.from("shows").select("*").eq("id", id).gte("start_time", today).single();
+  const { data: show, error } = await db.from("shows").select("*").eq("id", id).single();
   
   if (error) {
     return <div>Error fetching shows: {error.message}</div>;
