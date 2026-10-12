@@ -36,8 +36,7 @@ export default function RootLayout({
                   Events
                 </Link>
                 <Link href="/" className={`text-4xl px-6 md:text-6xl font-bold text-blood ${dancingScript.className}`}>
-               Red Jacks
-
+               <img src='../logo.jpg' />
                 </Link>
                 <Link href="/account" className="text-xl text-blood pt-4">
                   Tickets
